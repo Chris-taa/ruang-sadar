@@ -7,27 +7,27 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // ✨ Di sini sudah rapi dan tidak duplikat lagi
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
-    'name',
-    'username',
-    'email',
-    'password',
-    'age',
-    'role',
-    'about',
-    'license_id',
-    'profile_picture',
+        'name',
+        'username',
+        'email',
+        'password',
+        'role',
+        'age',
+        'about',
+        'profile_picture',
     ];
 
     /**
@@ -52,15 +52,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    // Tambahkan ini di dalam class User di file app/Models/User.php
 
-public function isTherapist(): bool
-{
-    return $this->role === 'therapist';
-}
+    /**
+     * Helper check untuk role Therapist
+     */
+    public function isTherapist(): bool
+    {
+        return $this->role === 'therapist';
+    }
 
-public function isPatient(): bool
-{
-    return $this->role === 'patient';
-}
+    /**
+     * Helper check untuk role Patient
+     */
+    public function isPatient(): bool
+    {
+        return $this->role === 'patient';
+    }
 }

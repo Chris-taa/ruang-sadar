@@ -14,8 +14,8 @@ return new class extends Migration
     Schema::create('users', function (Blueprint $table) {
         // Field Utama & Autentikasi
         $table->id();                                       // ID / ID_Therapist
-        $table->string('name');                             // nama
-        $table->string('username')->unique();               // username
+        $table->string('username')->nullable();
+        $table->string('name'); // ✨ TAMBAHKAN BARIS INI
         $table->string('email')->unique();                  // email
         $table->string('password');                         // pass
         $table->integer('age')->nullable();                 // umur
