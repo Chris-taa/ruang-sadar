@@ -19,9 +19,15 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+    'name',
+    'username',
+    'email',
+    'password',
+    'age',
+    'role',
+    'about',
+    'license_id',
+    'profile_picture',
     ];
 
     /**
@@ -46,4 +52,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // Tambahkan ini di dalam class User di file app/Models/User.php
+
+public function isTherapist(): bool
+{
+    return $this->role === 'therapist';
+}
+
+public function isPatient(): bool
+{
+    return $this->role === 'patient';
+}
 }
