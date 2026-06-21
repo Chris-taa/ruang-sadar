@@ -11,8 +11,9 @@ use App\Http\Controllers\API\FocusController;
 use App\Http\Controllers\API\VideoController; // -> Sudah ditambahkan
 
 // --- RUTE PUBLIK (Bisa diakses tanpa login) ---
+// --- RUTE PUBLIK (Bisa diakses tanpa login) ---
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']); // -> Sudah ditambah titik koma (;)
+Route::post('/login', [AuthController::class, 'login'])->name('login'); // -> Tambahkan ->name('login') di sini
 
 // --- RUTE TERPROTEKSI (Wajib bawa Token Sanctum) ---
 Route::middleware('auth:sanctum')->group(function () {
