@@ -8,16 +8,27 @@ use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\JournalController;
 use App\Http\Controllers\API\QuizController;
 use App\Http\Controllers\API\FocusController;
-use App\Http\Controllers\API\VideoController; // -> Sudah ditambahkan
+use App\Http\Controllers\API\VideoController;
+use App\Http\Controllers\API\PatientController;   // -> Tambahan baru
+use App\Http\Controllers\API\TherapistController; // -> Tambahan baru
 
 // --- RUTE PUBLIK (Bisa diakses tanpa login) ---
-// --- RUTE PUBLIK (Bisa diakses tanpa login) ---
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->name('login'); // -> Tambahkan ->name('login') di sini
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // --- RUTE TERPROTEKSI (Wajib bawa Token Sanctum) ---
 Route::middleware('auth:sanctum')->group(function () {
     
+    // --- FITUR PASIEN ---
+    Route::get('/patients/therapists', [PatientController::class, 'getTherapists']); // Lihat daftar psikolog
+    Route::post('/patients/appointments', [PatientController::class, 'bookSchedule']); // Booking jadwal
+    Route::put('/patients/profile', [PatientController::class, 'updateProfile']);      // Edit profil pasien
+
+    // --- FITUR TERAPIS ---
+    Route::put('/therapists/profile', [TherapistController::class, 'updateProfile']);          // Edit profil terapis
+    Route::get('/therapists/appointments', [TherapistController::class, 'getAppointments']);   // Lihat jadwal masuk
+    Route::patch('/therapists/appointments/{id}/status', [TherapistController::class, 'updateAppointmentStatus']); // Terima/Tolak jadwal
+
     // --- FITUR JURNAL ---
     Route::post('/journal', [JournalController::class, 'store']);       // Pasien & Terapis bisa nulis
     Route::get('/journal', [JournalController::class, 'index']);        // Lihat riwayat jurnal sendiri

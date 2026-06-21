@@ -6,14 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Models\Message;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(name="Chat", description="API untuk fitur chat")
+ */
 class ChatController extends Controller
 {
-    // 1. Ambil riwayat chat antara User yang login dengan lawan bicaranya
+    /**
+     * @OA\Get(
+     * path="/api/chat/{receiver_id}",
+     * tags={"Chat"},
+     * summary="Ambil riwayat chat",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(
+     * name="receiver_id",
+     * in="path",
+     * required=true,
+     * description="ID lawan bicara",
+     * @OA\Schema(type="integer")
+     * ),
+     * @OA\Response(response=200, description="Berhasil mengambil riwayat chat"),
+     * @OA\Response(response=401, description="Unauthenticated")
+     * )
+     */
     public function getChatHistory(Request $request, $receiver_id)
     {
         $sender_id = $request->user()->id;
 
-        // Mengambil semua pesan antara pengirim dan penerima (bolak-balik)
         $chats = Message::where(function($query) use ($sender_id, $receiver_id) {
                     $query->where('sender_id', $sender_id)->where('receiver_id', $receiver_id);
                 })->orWhere(function($query) use ($sender_id, $receiver_id) {
@@ -25,7 +43,24 @@ class ChatController extends Controller
         return response()->json(['status' => 'success', 'data' => $chats]);
     }
 
-    // 2. Kirim Pesan Baru
+    /**
+     * @OA\Post(
+     * path="/api/chat/send",
+     * tags={"Chat"},
+     * summary="Kirim pesan baru",
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * required={"receiver_id","message"},
+     * @OA\Property(property="receiver_id", type="integer", example=2),
+     * @OA\Property(property="message", type="string", example="Halo, bagaimana kabarmu?")
+     * )
+     * ),
+     * @OA\Response(response=200, description="Pesan terkirim"),
+     * @OA\Response(response=401, description="Unauthenticated")
+     * )
+     */
     public function sendMessage(Request $request)
     {
         $validated = $request->validate([
@@ -34,7 +69,7 @@ class ChatController extends Controller
         ]);
 
         $message = Message::create([
-            'sender_id' => $request->user()->id, // Otomatis dari token login
+            'sender_id' => $request->user()->id,
             'receiver_id' => $validated['receiver_id'],
             'message' => $validated['message'],
         ]);
