@@ -11,8 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
+    ->withMiddleware(function (Middleware $middleware) {
+    //
+    })
+    ->withCors(function ($cors) {
+        // Mengizinkan asal request (origins) tertentu, atau gunakan '*' untuk semuanya
+        $cors->allowOrigins(['*'])
+            ->allowMethods(['*'])
+            ->allowHeaders(['*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
