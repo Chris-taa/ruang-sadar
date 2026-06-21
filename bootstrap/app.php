@@ -14,12 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
     //
     })
-    ->withCors(function ($cors) {
-        // Mengizinkan asal request (origins) tertentu, atau gunakan '*' untuk semuanya
-        $cors->allowOrigins(['*'])
-            ->allowMethods(['*'])
-            ->allowHeaders(['*']);
-    })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
