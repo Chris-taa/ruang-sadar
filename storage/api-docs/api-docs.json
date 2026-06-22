@@ -598,6 +598,257 @@
                 ]
             }
         },
+        "/api/journal": {
+            "get": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Ambil riwayat jurnal pengguna",
+                "description": "Menampilkan daftar jurnal khusus milik user yang sedang login. Bisa difilter berdasarkan tanggal.",
+                "operationId": "bead93448320c17eec49e73f8911af31",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Filter berdasarkan tanggal (Format: YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2026-06-22"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data jurnal"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Simpan jurnal baru",
+                "description": "Menambahkan catatan jurnal baru dengan detail mood dan penyebabnya",
+                "operationId": "9c8043e3a2a19ad4ff66313e22edea62",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "mood",
+                                    "date"
+                                ],
+                                "properties": {
+                                    "mood": {
+                                        "type": "string",
+                                        "example": "Senang"
+                                    },
+                                    "cause": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Tugas Selesai",
+                                            "Tidur Cukup"
+                                        ]
+                                    },
+                                    "contain": {
+                                        "type": "string",
+                                        "example": "Hari ini sangat produktif dan menyenangkan."
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2026-06-22 18:30:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Jurnal berhasil disimpan"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Data tidak valid"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/journal/{id}": {
+            "get": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Detail satu jurnal",
+                "description": "Menampilkan detail satu jurnal berdasarkan ID",
+                "operationId": "400b43ba67c4abf6205db31127a4a396",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jurnal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail jurnal"
+                    },
+                    "404": {
+                        "description": "Jurnal tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Update jurnal",
+                "description": "Memperbarui data jurnal yang sudah ada",
+                "operationId": "4f827933db95dc34e98ed67c453e5bb7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jurnal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "mood": {
+                                        "type": "string",
+                                        "example": "Biasa Saja"
+                                    },
+                                    "cause": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Hujan",
+                                            "Bosan"
+                                        ]
+                                    },
+                                    "contain": {
+                                        "type": "string",
+                                        "example": "Hari ini biasa saja, cuma di rumah."
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2026-06-22 19:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Jurnal berhasil diperbarui"
+                    },
+                    "404": {
+                        "description": "Jurnal tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Hapus jurnal",
+                "description": "Menghapus catatan jurnal",
+                "operationId": "e961cfd32cfc7ef88c5599d488942c88",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Jurnal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Jurnal berhasil dihapus"
+                    },
+                    "404": {
+                        "description": "Jurnal tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/journal/dates/entries": {
+            "get": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Ambil tanggal yang ada jurnalnya",
+                "description": "Digunakan untuk marker dot di kalender aplikasi (menandai tanggal mana saja yang sudah diisi jurnal)",
+                "operationId": "1970cfd084a70e6aa40bee4a42d7f8c4",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data tanggal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/patients/appointments": {
             "post": {
                 "tags": [
@@ -666,22 +917,18 @@
             }
         },
         "/api/patients/profile": {
-            "put": {
+            "post": {
                 "tags": [
                     "Patient"
                 ],
-                "summary": "Ubah profil pasien",
-                "description": "Mengupdate data nama dan username khusus untuk pasien yang sedang login",
-                "operationId": "ce829cd417104f537f3d6c93fd87dd2f",
+                "summary": "Ubah profil pasien (Termasuk Foto)",
+                "description": "Mengupdate data nama, username, dan foto profil. Gunakan method POST dengan Content-Type: multipart/form-data.",
+                "operationId": "d487eac03b63220713f78a4d2296fc35",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "name",
-                                    "username"
-                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -690,6 +937,11 @@
                                     "username": {
                                         "type": "string",
                                         "example": "christian_candra"
+                                    },
+                                    "photo": {
+                                        "description": "File foto (Opsional)",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -716,22 +968,18 @@
             }
         },
         "/api/therapists/profile": {
-            "put": {
+            "post": {
                 "tags": [
                     "Therapist"
                 ],
-                "summary": "Ubah profil terapis",
-                "description": "Mengupdate data profil khusus untuk terapis yang sedang login",
-                "operationId": "97310cf8cc0b8290585b0685a45d36cf",
+                "summary": "Ubah profil terapis (Termasuk Foto)",
+                "description": "Mengupdate data profil dan foto khusus untuk terapis yang sedang login. Gunakan method POST dengan Content-Type: multipart/form-data.",
+                "operationId": "adf7f09b46a006211c025fb59001ce70",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "name",
-                                    "username"
-                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -740,6 +988,11 @@
                                     "username": {
                                         "type": "string",
                                         "example": "dian_sastro_psi"
+                                    },
+                                    "photo": {
+                                        "description": "File foto (Opsional)",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -936,6 +1189,10 @@
         {
             "name": "Focus Session",
             "description": "API untuk menjalankan dan merekap sesi fokus (Pomodoro/Timer)"
+        },
+        {
+            "name": "Journal",
+            "description": "API untuk mengelola jurnal mindfulness"
         },
         {
             "name": "Patient",
