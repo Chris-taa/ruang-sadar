@@ -155,29 +155,17 @@
                 }
             }
         },
-        "/api/journal": {
+        "/api/focus-preset": {
             "get": {
                 "tags": [
-                    "Journal"
+                    "Focus Preset"
                 ],
-                "summary": "Ambil riwayat jurnal pengguna",
-                "description": "Menampilkan daftar jurnal khusus milik user yang sedang login. Bisa difilter berdasarkan tanggal.",
-                "operationId": "bead93448320c17eec49e73f8911af31",
-                "parameters": [
-                    {
-                        "name": "date",
-                        "in": "query",
-                        "description": "Filter berdasarkan tanggal (Format: YYYY-MM-DD)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "2026-06-22"
-                        }
-                    }
-                ],
+                "summary": "Ambil semua preset fokus milik pengguna",
+                "description": "Menampilkan daftar preset waktu fokus (Pomodoro atau Timer) khusus untuk user yang sedang login.",
+                "operationId": "aee714c1bcb8e1b730471e9cdb4bb294",
                 "responses": {
                     "200": {
-                        "description": "Berhasil mengambil data jurnal"
+                        "description": "Berhasil mengambil data preset"
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -191,43 +179,53 @@
             },
             "post": {
                 "tags": [
-                    "Journal"
+                    "Focus Preset"
                 ],
-                "summary": "Simpan jurnal baru",
-                "description": "Menambahkan catatan jurnal baru dengan detail mood dan penyebabnya",
-                "operationId": "9c8043e3a2a19ad4ff66313e22edea62",
+                "summary": "Simpan preset fokus baru",
+                "description": "Menambahkan preset baru. Jika tipe 'pomodoro', maka `short_break` dan `rounds` wajib diisi.",
+                "operationId": "e70ceea8125d4a6a4b991a48d77bef3d",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "mood",
-                                    "date"
+                                    "name",
+                                    "type",
+                                    "focus_duration"
                                 ],
                                 "properties": {
-                                    "mood": {
+                                    "name": {
                                         "type": "string",
-                                        "example": "Senang"
+                                        "example": "Belajar Android"
                                     },
-                                    "cause": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "example": [
-                                            "Tugas Selesai",
-                                            "Tidur Cukup"
+                                    "type": {
+                                        "type": "string",
+                                        "example": "pomodoro",
+                                        "enum": [
+                                            "pomodoro",
+                                            "timer"
                                         ]
                                     },
-                                    "contain": {
-                                        "type": "string",
-                                        "example": "Hari ini sangat produktif dan menyenangkan."
+                                    "focus_duration": {
+                                        "description": "Durasi fokus dalam menit",
+                                        "type": "integer",
+                                        "example": 25
                                     },
-                                    "date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2026-06-22 18:30:00"
+                                    "short_break": {
+                                        "description": "Durasi istirahat pendek dalam menit",
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "long_break": {
+                                        "description": "Durasi istirahat panjang dalam menit",
+                                        "type": "integer",
+                                        "example": 15
+                                    },
+                                    "rounds": {
+                                        "description": "Jumlah ronde sebelum istirahat panjang",
+                                        "type": "integer",
+                                        "example": 4
                                     }
                                 },
                                 "type": "object"
@@ -237,7 +235,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Jurnal berhasil disimpan"
+                        "description": "Preset berhasil disimpan"
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -253,19 +251,19 @@
                 ]
             }
         },
-        "/api/journal/{id}": {
+        "/api/focus-preset/{id}": {
             "get": {
                 "tags": [
-                    "Journal"
+                    "Focus Preset"
                 ],
-                "summary": "Detail satu jurnal",
-                "description": "Menampilkan detail satu jurnal berdasarkan ID",
-                "operationId": "400b43ba67c4abf6205db31127a4a396",
+                "summary": "Detail satu preset fokus",
+                "description": "Menampilkan detail satu preset berdasarkan ID.",
+                "operationId": "16e4fe1db9f2de5065ffb09b8da5fa2c",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID Jurnal",
+                        "description": "ID Preset",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -274,10 +272,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Berhasil mengambil detail jurnal"
+                        "description": "Berhasil mengambil detail preset"
                     },
                     "404": {
-                        "description": "Jurnal tidak ditemukan"
+                        "description": "Preset tidak ditemukan"
                     }
                 },
                 "security": [
@@ -288,16 +286,16 @@
             },
             "put": {
                 "tags": [
-                    "Journal"
+                    "Focus Preset"
                 ],
-                "summary": "Update jurnal",
-                "description": "Memperbarui data jurnal yang sudah ada",
-                "operationId": "4f827933db95dc34e98ed67c453e5bb7",
+                "summary": "Update preset fokus",
+                "description": "Memperbarui data preset yang sudah ada.",
+                "operationId": "42b7db8d0e233a18d4fbf0b9911d1673",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID Jurnal",
+                        "description": "ID Preset",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -310,28 +308,33 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "mood": {
+                                    "name": {
                                         "type": "string",
-                                        "example": "Biasa Saja"
+                                        "example": "Membaca Buku"
                                     },
-                                    "cause": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "example": [
-                                            "Hujan",
-                                            "Bosan"
+                                    "type": {
+                                        "type": "string",
+                                        "example": "timer",
+                                        "enum": [
+                                            "pomodoro",
+                                            "timer"
                                         ]
                                     },
-                                    "contain": {
-                                        "type": "string",
-                                        "example": "Hari ini biasa saja, cuma di rumah."
+                                    "focus_duration": {
+                                        "type": "integer",
+                                        "example": 45
                                     },
-                                    "date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2026-06-22 19:00:00"
+                                    "short_break": {
+                                        "type": "integer",
+                                        "example": null
+                                    },
+                                    "long_break": {
+                                        "type": "integer",
+                                        "example": null
+                                    },
+                                    "rounds": {
+                                        "type": "integer",
+                                        "example": null
                                     }
                                 },
                                 "type": "object"
@@ -341,10 +344,13 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Jurnal berhasil diperbarui"
+                        "description": "Preset berhasil diperbarui"
                     },
                     "404": {
-                        "description": "Jurnal tidak ditemukan"
+                        "description": "Preset tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Data tidak valid"
                     }
                 },
                 "security": [
@@ -355,16 +361,16 @@
             },
             "delete": {
                 "tags": [
-                    "Journal"
+                    "Focus Preset"
                 ],
-                "summary": "Hapus jurnal",
-                "description": "Menghapus catatan jurnal",
-                "operationId": "e961cfd32cfc7ef88c5599d488942c88",
+                "summary": "Hapus preset fokus",
+                "description": "Menghapus preset fokus berdasarkan ID.",
+                "operationId": "550d85afe1b4a0c98628c62a8e865557",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID Jurnal",
+                        "description": "ID Preset",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -373,10 +379,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Jurnal berhasil dihapus"
+                        "description": "Preset berhasil dihapus"
                     },
                     "404": {
-                        "description": "Jurnal tidak ditemukan"
+                        "description": "Preset tidak ditemukan"
                     }
                 },
                 "security": [
@@ -386,17 +392,203 @@
                 ]
             }
         },
-        "/api/journal/dates/entries": {
-            "get": {
+        "/api/focus-session/start": {
+            "post": {
                 "tags": [
-                    "Journal"
+                    "Focus Session"
                 ],
-                "summary": "Ambil tanggal yang ada jurnalnya",
-                "description": "Digunakan untuk marker dot di kalender aplikasi (menandai tanggal mana saja yang sudah diisi jurnal)",
-                "operationId": "1970cfd084a70e6aa40bee4a42d7f8c4",
+                "summary": "Mulai sesi fokus baru",
+                "description": "Memulai sesi fokus. User tidak bisa memulai sesi baru jika masih ada sesi yang berstatus 'ongoing'.",
+                "operationId": "d45fa80a73411deec6a7d5a67cbd120d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "planned_duration"
+                                ],
+                                "properties": {
+                                    "preset_id": {
+                                        "description": "ID dari Focus Preset (opsional)",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "pomodoro",
+                                        "enum": [
+                                            "pomodoro",
+                                            "timer"
+                                        ]
+                                    },
+                                    "planned_duration": {
+                                        "description": "Durasi rencana dalam menit",
+                                        "type": "integer",
+                                        "example": 25
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sesi fokus dimulai"
+                    },
+                    "409": {
+                        "description": "Masih ada sesi yang berjalan"
+                    },
+                    "422": {
+                        "description": "Data tidak valid"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/focus-session/{id}/end": {
+            "post": {
+                "tags": [
+                    "Focus Session"
+                ],
+                "summary": "Selesaikan atau batalkan sesi fokus",
+                "description": "Mengakhiri sesi fokus yang sedang berjalan dengan mengubah statusnya menjadi completed atau cancelled.",
+                "operationId": "45b4c5dbe88cf07d504af6427edc1796",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Sesi Fokus",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status",
+                                    "actual_duration"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "completed",
+                                        "enum": [
+                                            "completed",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "actual_duration": {
+                                        "description": "Durasi aktual yang diselesaikan dalam menit",
+                                        "type": "integer",
+                                        "example": 25
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Berhasil mengambil data tanggal"
+                        "description": "Sesi fokus selesai atau dibatalkan"
+                    },
+                    "404": {
+                        "description": "Sesi tidak ditemukan atau tidak sedang berjalan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/focus-session/ongoing": {
+            "get": {
+                "tags": [
+                    "Focus Session"
+                ],
+                "summary": "Cek sesi yang sedang berjalan",
+                "description": "Mendapatkan data sesi fokus milik user yang saat ini masih berstatus 'ongoing'.",
+                "operationId": "9e6c7c6c94c41636d1aff03b3abd43ac",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data sesi (bisa mengembalikan null jika tidak ada)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/focus-session/history": {
+            "get": {
+                "tags": [
+                    "Focus Session"
+                ],
+                "summary": "Riwayat sesi fokus",
+                "description": "Menampilkan riwayat semua sesi fokus (completed/cancelled) dengan fitur pagination dan filter tanggal.",
+                "operationId": "20e7ef393efd42d4e88956af9ab4c3b8",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Filter tanggal (Format YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2026-06-22"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil riwayat sesi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/focus-session/stats": {
+            "get": {
+                "tags": [
+                    "Focus Session"
+                ],
+                "summary": "Statistik total jam fokus",
+                "description": "Mengambil rangkuman statistik waktu fokus user (total menit, hari ini, minggu ini, bulan ini) serta statistik harian untuk grafik.",
+                "operationId": "47f4bc56a3490461d42068fcbfd1b8b3",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil statistik fokus"
                     }
                 },
                 "security": [
@@ -738,8 +930,12 @@
             "description": "API Otentikasi User"
         },
         {
-            "name": "Journal",
-            "description": "API untuk mengelola jurnal mindfulness"
+            "name": "Focus Preset",
+            "description": "API untuk mengelola preset waktu fokus (Pomodoro/Timer)"
+        },
+        {
+            "name": "Focus Session",
+            "description": "API untuk menjalankan dan merekap sesi fokus (Pomodoro/Timer)"
         },
         {
             "name": "Patient",
