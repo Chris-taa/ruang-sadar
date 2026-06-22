@@ -29,9 +29,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/therapists/appointments', [TherapistController::class, 'getAppointments']);   // Lihat jadwal masuk
     Route::patch('/therapists/appointments/{id}/status', [TherapistController::class, 'updateAppointmentStatus']); // Terima/Tolak jadwal
 
-    // --- FITUR JURNAL ---
-    Route::post('/journal', [JournalController::class, 'store']);       // Pasien & Terapis bisa nulis
-    Route::get('/journal', [JournalController::class, 'index']);        // Lihat riwayat jurnal sendiri
+    Route::get('/journals/dates',   [JournalController::class, 'datesWithEntries']);
+    Route::get('/journals',         [JournalController::class, 'index']);
+    Route::post('/journals',        [JournalController::class, 'store']);
+    Route::get('/journals/{id}',    [JournalController::class, 'show']);
+    Route::put('/journals/{id}',    [JournalController::class, 'update']);
+    Route::delete('/journals/{id}', [JournalController::class, 'destroy']);
 
     // --- FITUR ARTIKEL ---
     Route::get('/articles', [ArticleController::class, 'index']);       // Pasien & Terapis bisa lihat semua artikel

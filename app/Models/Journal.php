@@ -5,15 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Journal extends Model{
+class Journal extends Model
+{
     use HasFactory;
 
-    // Mengizinkan semua kolom untuk diisi secara langsung (mass assignment)
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'mood',
+        'cause',
+        'contain',
+        'date',
+    ];
 
-    // Memberitahu Laravel untuk memperlakukan 'cause' sebagai array
     protected $casts = [
         'cause' => 'array',
-        'date' => 'datetime',
+        'date'  => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
