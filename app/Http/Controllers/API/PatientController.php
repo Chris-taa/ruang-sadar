@@ -67,21 +67,24 @@ class PatientController extends Controller
         ], 201);
     }
 
-    #[OA\Put(
+    #[OA\Post( // Ubah dari PUT menjadi POST karena mengurus file upload (multipart/form-data)
         path: "/api/patients/profile",
-        summary: "Ubah profil pasien",
+        summary: "Ubah profil pasien (Termasuk Foto)",
         tags: ["Patient"],
-        description: "Mengupdate data nama dan username khusus untuk pasien yang sedang login",
+        description: "Mengupdate data nama, username, dan foto profil. Gunakan method POST dengan Content-Type: multipart/form-data.",
         security: [["bearerAuth" => []]]
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(
-            required: ["name", "username"],
-            properties: [
-                new OA\Property(property: "name", type: "string", example: "Christian Hadi Candra"),
-                new OA\Property(property: "username", type: "string", example: "christian_candra")
-            ]
+        content: new OA\MediaType(
+            mediaType: "multipart/form-data",
+            schema: new OA\Schema(
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "Christian Hadi Candra"),
+                    new OA\Property(property: "username", type: "string", example: "christian_candra"),
+                    new OA\Property(property: "photo", type: "string", format: "binary", description: "File foto (Opsional)")
+                ]
+            )
         )
     )]
     #[OA\Response(response: 200, description: "Profil berhasil diperbarui")]
@@ -89,7 +92,7 @@ class PatientController extends Controller
     #[OA\Response(response: 422, description: "Data tidak valid")]
     public function updateProfile(Request $request)
     {
-        // 1. Pastikan hanya user dengan role patient yang bisa akses rute ini
+        // 1. Pastikan hanya user dengan role patient yang bisa akses
         if ($request->user()->role !== 'patient') {
             return response()->json([
                 'status' => 'error',
@@ -99,17 +102,34 @@ class PatientController extends Controller
 
         $user = $request->user();
 
-        // 2. Validasi input data baru
+        // 2. Validasi input
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'name' => 'sometimes|required|string|max:255',
+            'username' => 'sometimes|required|string|max:255|unique:users,username,' . $user->id,
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi foto (maks 2MB)
         ]);
 
-        // 3. Proses update ke database
-        $user->update([
-            'name' => $validated['name'],
-            'username' => $validated['username'],
-        ]);
+        // Siapkan array data yang mau diupdate
+        $updateData = [];
+
+        if (isset($validated['name'])) {
+            $updateData['name'] = $validated['name'];
+        }
+        
+        if (isset($validated['username'])) {
+            $updateData['username'] = $validated['username'];
+        }
+
+        // 3. Proses upload foto ke Cloudinary jika file foto disertakan
+        if ($request->hasFile('photo')) {
+            $uploadedFileUrl = cloudinary()->upload($request->file('photo')->getRealPath())->getSecurePath();
+            $updateData['profile_picture'] = $uploadedFileUrl;
+        }
+
+        // 4. Update database
+        if (!empty($updateData)) {
+            $user->update($updateData);
+        }
 
         return response()->json([
             'status' => 'success',

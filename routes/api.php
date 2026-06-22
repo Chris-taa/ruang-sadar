@@ -24,10 +24,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- FITUR PASIEN ---
     Route::get('/patients/therapists', [PatientController::class, 'getTherapists']); // Lihat daftar psikolog
     Route::post('/patients/appointments', [PatientController::class, 'bookSchedule']); // Booking jadwal
-    Route::put('/patients/profile', [PatientController::class, 'updateProfile']);      // Edit profil pasien
+    Route::post('/patients/profile', [PatientController::class, 'updateProfile']);     // ✨ UBAH KE POST: Edit profil pasien (mendukung foto)
 
     // --- FITUR TERAPIS ---
-    Route::put('/therapists/profile', [TherapistController::class, 'updateProfile']);          // Edit profil terapis
+    Route::post('/therapists/profile', [TherapistController::class, 'updateProfile']);         // ✨ UBAH KE POST: Edit profil terapis (mendukung foto)
     Route::get('/therapists/appointments', [TherapistController::class, 'getAppointments']);   // Lihat jadwal masuk
     Route::patch('/therapists/appointments/{id}/status', [TherapistController::class, 'updateAppointmentStatus']); // Terima/Tolak jadwal
 
