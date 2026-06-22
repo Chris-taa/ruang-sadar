@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
     title: "RuangSadar API"
 )]
 #[OA\Server(
-    url: "https://ruang-sadar-production.up.railway.app/", // <--- GANTI DENGAN LINK RAILWAY KAMU
+    url: "https://ruang-sadar-production.up.railway.app/", 
     description: "Production Server (Railway)"
 )]
 #[OA\Server(

@@ -15,6 +15,7 @@ use App\Http\Controllers\API\TherapistController; // -> Tambahan baru
 // --- RUTE PUBLIK (Bisa diakses tanpa login) ---
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
 // --- RUTE TERPROTEKSI (Wajib bawa Token Sanctum) ---
 Route::middleware('auth:sanctum')->group(function () {
