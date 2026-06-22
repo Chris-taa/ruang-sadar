@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Journal;
 use Illuminate\Http\Request;
-use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: "Journal", description: "API untuk mengelola jurnal mindfulness")]
 class JournalController extends Controller
