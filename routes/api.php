@@ -75,5 +75,11 @@ Route::middleware(['api'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
+
+        Route::get('/clear-cache', function () {
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return response()->json(['message' => 'Cache server Railway berhasil dibersihkan!']);
+    });
     });
 });
