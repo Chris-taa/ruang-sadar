@@ -762,63 +762,32 @@
             }
         },
         "/api/patients/appointments": {
+            "get": {
+                "tags": [
+                    "Patient"
+                ],
+                "summary": "Ambil semua jadwal konsultasi pasien",
+                "operationId": "cc5dae105374c2e267b02c52d7556923",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil jadwal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Patient"
                 ],
                 "summary": "Buat jadwal konsultasi baru",
-                "description": "Menyimpan data dari form Atur Jadwal",
                 "operationId": "4a053cfa62a42a38721cf5dd97e4c68b",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "therapist_id",
-                                    "full_name",
-                                    "consultation_date",
-                                    "topic",
-                                    "method"
-                                ],
-                                "properties": {
-                                    "therapist_id": {
-                                        "description": "ID Psikolog/Terapis yang dipilih dari list",
-                                        "type": "integer",
-                                        "example": 2
-                                    },
-                                    "full_name": {
-                                        "type": "string",
-                                        "example": "Budi Santoso"
-                                    },
-                                    "consultation_date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2026-06-25"
-                                    },
-                                    "topic": {
-                                        "type": "string",
-                                        "example": "Saya sering merasa cemas akhir-akhir ini karena tugas menumpuk."
-                                    },
-                                    "method": {
-                                        "type": "string",
-                                        "example": "online"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "201": {
-                        "description": "Jadwal berhasil dibuat"
-                    },
-                    "403": {
-                        "description": "Akses ditolak (Bukan Pasien)"
-                    },
-                    "422": {
-                        "description": "Data tidak valid"
+                        "description": "Jadwal konsultasi berhasil dibuat"
                     }
                 },
                 "security": [
@@ -834,42 +803,10 @@
                     "Patient"
                 ],
                 "summary": "Ubah profil pasien (Termasuk Foto)",
-                "description": "Mengupdate data nama, username, dan foto profil. Gunakan method POST dengan Content-Type: multipart/form-data.",
                 "operationId": "d487eac03b63220713f78a4d2296fc35",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Christian Hadi Candra"
-                                    },
-                                    "username": {
-                                        "type": "string",
-                                        "example": "christian_candra"
-                                    },
-                                    "photo": {
-                                        "description": "File foto (Opsional)",
-                                        "type": "string",
-                                        "format": "binary"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "Profil berhasil diperbarui"
-                    },
-                    "403": {
-                        "description": "Akses ditolak (Bukan Pasien)"
-                    },
-                    "422": {
-                        "description": "Data tidak valid"
                     }
                 },
                 "security": [
@@ -885,7 +822,6 @@
                     "Patient"
                 ],
                 "summary": "Ambil daftar psikolog",
-                "description": "Mengambil semua user dengan role therapist",
                 "operationId": "73f7455ffc13892679d4c9d2bf31d40f",
                 "responses": {
                     "200": {

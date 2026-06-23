@@ -41,6 +41,7 @@ Route::middleware(['api'])->group(function () {
         Route::get('/patients/therapists', [PatientController::class, 'getTherapists']);
         Route::post('/patients/appointments', [PatientController::class, 'bookSchedule']);
         Route::post('/patients/profile', [PatientController::class, 'updateProfile']);
+        Route::get('/patients/appointments', [PatientController::class, 'getAppointments']);
 
         // FITUR TERAPIS
         Route::post('/therapists/profile', [TherapistController::class, 'updateProfile']);
