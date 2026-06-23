@@ -10,61 +10,70 @@ use App\Http\Controllers\API\QuizController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\PatientController;
 use App\Http\Controllers\API\TherapistController;
-use App\Http\Controllers\API\FocusPresetController;   // -> Controller baru untuk preset
-use App\Http\Controllers\API\FocusSessionController;  // -> Controller baru untuk sesi fokus
+use App\Http\Controllers\API\FocusPresetController;
+use App\Http\Controllers\API\FocusSessionController;
 
-// --- RUTE PUBLIK (Bisa diakses tanpa login) ---
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/auth/google', [AuthController::class, 'googleLogin']);
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+| Membungkus rute dalam middleware 'api' memastikan Laravel 
+| memperlakukan request sebagai API dan memberikan respons JSON.
+*/
 
-// --- RUTE TERPROTEKSI (Wajib bawa Token Sanctum) ---
-Route::middleware('auth:sanctum')->group(function () {
-    
-    // --- FITUR PASIEN ---
-    Route::get('/patients/therapists', [PatientController::class, 'getTherapists']); // Lihat daftar psikolog
-    Route::post('/patients/appointments', [PatientController::class, 'bookSchedule']); // Booking jadwal
-    Route::post('/patients/profile', [PatientController::class, 'updateProfile']);     // ✨ UBAH KE POST: Edit profil pasien (mendukung foto)
+Route::middleware(['api'])->group(function () {
+    // --- RUTE PUBLIK ---
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
-    // --- FITUR TERAPIS ---
-    Route::post('/therapists/profile', [TherapistController::class, 'updateProfile']);         // ✨ UBAH KE POST: Edit profil terapis (mendukung foto)
-    Route::get('/therapists/appointments', [TherapistController::class, 'getAppointments']);   // Lihat jadwal masuk
-    Route::patch('/therapists/appointments/{id}/status', [TherapistController::class, 'updateAppointmentStatus']); // Terima/Tolak jadwal
+    // --- RUTE TERPROTEKSI ---
+    Route::middleware('auth:sanctum')->group(function () {
+        
+        // FITUR PASIEN
+        Route::get('/patients/therapists', [PatientController::class, 'getTherapists']);
+        Route::post('/patients/appointments', [PatientController::class, 'bookSchedule']);
+        Route::post('/patients/profile', [PatientController::class, 'updateProfile']);
 
-    // --- FITUR JURNAL (Sudah disesuaikan dengan Swagger) ---
-    Route::get('/journal/dates/entries', [JournalController::class, 'datesWithEntries']);
-    Route::apiResource('journal', JournalController::class);
+        // FITUR TERAPIS
+        Route::post('/therapists/profile', [TherapistController::class, 'updateProfile']);
+        Route::get('/therapists/appointments', [TherapistController::class, 'getAppointments']);
+        Route::patch('/therapists/appointments/{id}/status', [TherapistController::class, 'updateAppointmentStatus']);
 
-    // --- FITUR ARTIKEL ---
-    Route::get('/articles', [ArticleController::class, 'index']);       // Pasien & Terapis bisa lihat semua artikel
-    Route::get('/articles/{id}', [ArticleController::class, 'show']);   // Pasien & Terapis bisa baca detail artikel
-    Route::post('/articles', [ArticleController::class, 'store']);      // Hanya Terapis
+        // FITUR JURNAL
+        Route::get('/journal/dates/entries', [JournalController::class, 'datesWithEntries']);
+        Route::apiResource('journal', JournalController::class);
 
-    // --- FITUR FOCUS MODE (Preset & Session) ---
-    Route::apiResource('focus-preset', FocusPresetController::class);
-    
-    Route::prefix('focus-session')->group(function () {
-        Route::post('/start', [FocusSessionController::class, 'start']);
-        Route::post('/{id}/end', [FocusSessionController::class, 'end']);
-        Route::get('/ongoing', [FocusSessionController::class, 'ongoing']);
-        Route::get('/history', [FocusSessionController::class, 'history']);
-        Route::get('/stats', [FocusSessionController::class, 'stats']);
+        // FITUR ARTIKEL
+        Route::get('/articles', [ArticleController::class, 'index']);
+        Route::get('/articles/{id}', [ArticleController::class, 'show']);
+        Route::post('/articles', [ArticleController::class, 'store']);
+
+        // FITUR FOCUS MODE
+        Route::apiResource('focus-preset', FocusPresetController::class);
+        Route::prefix('focus-session')->group(function () {
+            Route::post('/start', [FocusSessionController::class, 'start']);
+            Route::post('/{id}/end', [FocusSessionController::class, 'end']);
+            Route::get('/ongoing', [FocusSessionController::class, 'ongoing']);
+            Route::get('/history', [FocusSessionController::class, 'history']);
+            Route::get('/stats', [FocusSessionController::class, 'stats']);
+        });
+
+        // FITUR QUIZ
+        Route::get('/quizzes', [QuizController::class, 'index']);
+        Route::post('/quizzes/submit', [QuizController::class, 'submit']);
+
+        // FITUR CHAT
+        Route::get('/chat/{receiver_id}', [ChatController::class, 'getChatHistory']);
+        Route::post('/chat/send', [ChatController::class, 'sendMessage']);
+
+        // FITUR VIDEO
+        Route::get('/videos', [VideoController::class, 'index']);
+        Route::get('/videos/{id}', [VideoController::class, 'show']);
+
+        // USER INFO
+        Route::get('/user', function (Request $request) {
+            return $request->user();
+        });
     });
-
-    // --- FITUR QUIZ ---
-    Route::get('/quizzes', [QuizController::class, 'index']);           // Lihat daftar kuis
-    Route::post('/quizzes/submit', [QuizController::class, 'submit']);  // Kirim hasil kuis
-
-    // --- FITUR CHAT ---
-    Route::get('/chat/{receiver_id}', [ChatController::class, 'getChatHistory']);
-    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
-
-    // --- FITUR VIDEO ---
-    Route::get('/videos', [VideoController::class, 'index']);           // List video
-    Route::get('/videos/{id}', [VideoController::class, 'show']);       // Detail 1 video
-    
 });
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
