@@ -190,9 +190,10 @@ class JournalController extends Controller
     #[OA\Response(response: 200, description: "Berhasil mengambil data tanggal")]
     public function datesWithEntries(Request $request)
     {
+        // Gunakan DB::raw atau groupByRaw agar query tidak crash
         $dates = Journal::where('user_id', $request->user()->id)
             ->selectRaw('DATE(date) as date, COUNT(*) as count')
-            ->groupBy('date')
+            ->groupByRaw('DATE(date)')
             ->orderBy('date', 'asc')
             ->get();
 
