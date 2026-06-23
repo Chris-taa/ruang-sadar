@@ -15,39 +15,37 @@ class AuthController extends Controller
     #[OA\Post(path: "/api/register", summary: "Register akun baru", tags: ["Auth"])]
     public function register(Request $request)
     {
-        // Gunakan Validator manual agar tidak redirect ke HTML
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users',
             'username' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:patient,therapist',
+            'role'     => 'required|in:patient,therapist',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
+                'success' => false,
                 'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'username' => $request->username,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role'     => $request->role,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'message' => 'Registrasi berhasil!',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
+            'token'   => $token,
+            'data'    => $user
         ], 201);
     }
 
@@ -55,19 +53,23 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => 'Input tidak valid', 'errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Input tidak valid',
+                'errors'  => $validator->errors()
+            ], 422);
         }
 
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'status' => 'error',
+                'success' => false,
                 'message' => 'Email atau password salah.'
             ], 401);
         }
@@ -75,11 +77,10 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'message' => 'Login berhasil!',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
+            'token'   => $token,
+            'data'    => $user
         ]);
     }
 
@@ -91,38 +92,46 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => 'Token wajib diisi'], 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Token wajib diisi'
+            ], 422);
         }
 
         try {
-            $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+            $client  = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
             $payload = $client->verifyIdToken($request->id_token);
 
             if ($payload) {
                 $user = User::firstOrCreate(
                     ['email' => $payload['email']],
                     [
-                        'name' => $payload['name'],
+                        'name'     => $payload['name'],
                         'username' => explode('@', $payload['email'])[0] . rand(100, 999),
                         'password' => Hash::make(\Illuminate\Support\Str::random(16)),
-                        'role' => 'patient'
+                        'role'     => 'patient'
                     ]
                 );
 
                 $token = $user->createToken('auth_token')->plainTextToken;
 
                 return response()->json([
-                    'status' => 'success',
+                    'success' => true,
                     'message' => 'Login Google berhasil',
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
-                    'user' => $user
+                    'token'   => $token,
+                    'data'    => $user
                 ]);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Server Error: ' . $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Server Error: ' . $e->getMessage()
+            ], 500);
         }
 
-        return response()->json(['status' => 'error', 'message' => 'Token Google tidak valid'], 401);
+        return response()->json([
+            'success' => false,
+            'message' => 'Token Google tidak valid'
+        ], 401);
     }
 }
