@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\User;
 use OpenApi\Attributes as OA;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;    
 
 #[OA\Tag(name: "Patient", description: "API untuk fitur dan data khusus pasien")]
 class PatientController extends Controller
@@ -122,8 +123,9 @@ class PatientController extends Controller
         }
 
         // 3. Proses upload foto ke Cloudinary jika file foto disertakan
+        // 3. Proses upload foto ke Cloudinary
         if ($request->hasFile('photo')) {
-            $uploadedFileUrl = cloudinary()->upload($request->file('photo')->getRealPath())->getSecurePath();
+            $uploadedFileUrl = Cloudinary::upload($request->file('photo')->getRealPath())->getSecurePath();
             $updateData['profile_picture'] = $uploadedFileUrl;
         }
 
