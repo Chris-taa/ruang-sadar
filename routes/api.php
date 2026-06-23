@@ -27,6 +27,13 @@ Route::middleware(['api'])->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
+    // ✨ PINDAHKAN KE SINI (Di luar auth:sanctum)
+    Route::get('/clear-cache', function () {
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return response()->json(['message' => 'Cache server Railway berhasil dibersihkan!']);
+    });
+
     // --- RUTE TERPROTEKSI ---
     Route::middleware('auth:sanctum')->group(function () {
         
@@ -76,10 +83,6 @@ Route::middleware(['api'])->group(function () {
             return $request->user();
         });
 
-        Route::get('/clear-cache', function () {
-        \Illuminate\Support\Facades\Artisan::call('config:clear');
-        \Illuminate\Support\Facades\Artisan::call('cache:clear');
-        return response()->json(['message' => 'Cache server Railway berhasil dibersihkan!']);
-    });
+        
     });
 });
