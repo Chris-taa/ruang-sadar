@@ -115,9 +115,14 @@ class AuthController extends Controller
                         'name'     => $payload['name'],
                         'username' => explode('@', $payload['email'])[0] . rand(100, 999),
                         'password' => Hash::make(\Illuminate\Support\Str::random(16)),
-                        'role'     => 'patient'
+                        'role'     => 'patient',
+                        'profile_picture' => $payload['picture'] ?? null,
                     ]
                 );
+
+                if (!empty($payload['picture'])) {
+                    $user->update(['profile_picture' => $payload['picture']]);
+                }
 
                 $token = $user->createToken('auth_token')->plainTextToken;
 
