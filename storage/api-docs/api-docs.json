@@ -23,54 +23,12 @@
                 ],
                 "summary": "Register akun baru",
                 "operationId": "a718f172ff3ac464d723835815f8fb57",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "email",
-                                    "username",
-                                    "password",
-                                    "role"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Christian Candra"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "chris@example.com"
-                                    },
-                                    "username": {
-                                        "type": "string",
-                                        "example": "chris123"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
-                                    },
-                                    "role": {
-                                        "description": "Pilihan: patient atau therapist",
-                                        "type": "string",
-                                        "example": "patient"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "201": {
                         "description": "Registrasi berhasil"
                     },
                     "422": {
-                        "description": "Data tidak valid"
+                        "description": "Validasi gagal"
                     }
                 }
             }
@@ -82,32 +40,6 @@
                 ],
                 "summary": "Login user",
                 "operationId": "44212a9096e4b09358281e9ec8a0701d",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "chris@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "Login berhasil"
@@ -123,34 +55,14 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Login dengan akun Google",
-                "description": "Menerima id_token dari Android, memvalidasinya, dan mengembalikan token akses",
+                "summary": "Login dengan Google",
                 "operationId": "f53e9b3810807365b968103a33b5c93f",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "id_token"
-                                ],
-                                "properties": {
-                                    "id_token": {
-                                        "description": "ID Token dari Google Sign-In Android",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Berhasil login/register via Google"
+                        "description": "Login Google berhasil"
                     },
                     "401": {
-                        "description": "Token Google tidak valid"
+                        "description": "Token tidak valid"
                     }
                 }
             }
@@ -958,6 +870,26 @@
                     },
                     "422": {
                         "description": "Data tidak valid"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/patients/therapists": {
+            "get": {
+                "tags": [
+                    "Patient"
+                ],
+                "summary": "Ambil daftar psikolog",
+                "description": "Mengambil semua user dengan role therapist",
+                "operationId": "73f7455ffc13892679d4c9d2bf31d40f",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar psikolog"
                     }
                 },
                 "security": [

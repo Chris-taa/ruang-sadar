@@ -13,6 +13,8 @@ use OpenApi\Attributes as OA;
 class AuthController extends Controller
 {
     #[OA\Post(path: "/api/register", summary: "Register akun baru", tags: ["Auth"])]
+    #[OA\Response(response: 201, description: "Registrasi berhasil")]
+    #[OA\Response(response: 422, description: "Validasi gagal")]
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -50,6 +52,8 @@ class AuthController extends Controller
     }
 
     #[OA\Post(path: "/api/login", summary: "Login user", tags: ["Auth"])]
+    #[OA\Response(response: 200, description: "Login berhasil")]
+    #[OA\Response(response: 401, description: "Email atau password salah")]
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -85,6 +89,8 @@ class AuthController extends Controller
     }
 
     #[OA\Post(path: "/api/auth/google", summary: "Login dengan Google", tags: ["Auth"])]
+    #[OA\Response(response: 200, description: "Login Google berhasil")]
+    #[OA\Response(response: 401, description: "Token tidak valid")]
     public function googleLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [

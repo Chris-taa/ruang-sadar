@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
+use App\Models\User;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: "Patient", description: "API untuk fitur dan data khusus pasien")]
@@ -135,6 +136,32 @@ class PatientController extends Controller
             'status' => 'success',
             'message' => 'Profil berhasil diperbarui!',
             'data' => $user
+        ]);
+    }
+
+    #[OA\Get(
+        path: "/api/patients/therapists",
+        summary: "Ambil daftar psikolog",
+        tags: ["Patient"],
+        description: "Mengambil semua user dengan role therapist",
+        security: [["bearerAuth" => []]]
+    )]
+    #[OA\Response(response: 200, description: "Berhasil mengambil daftar psikolog")]
+    public function getTherapists(Request $request)
+    {
+        if ($request->user()->role !== 'patient') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Akses ditolak.'
+            ], 403);
+        }
+
+        // Ambil semua user yang memiliki role 'therapist'
+        $therapists = User::where('role', 'therapist')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $therapists
         ]);
     }
 }
