@@ -190,12 +190,26 @@ class JournalController extends Controller
     #[OA\Response(response: 200, description: "Berhasil mengambil data tanggal")]
     public function datesWithEntries(Request $request)
     {
-        // Gunakan DB::raw atau groupByRaw agar query tidak crash
-        $dates = Journal::where('user_id', $request->user()->id)
+        $userId = $request->user()->id;
+
+        $dates = Journal::where('user_id', $userId)
             ->selectRaw('DATE(date) as date, COUNT(*) as count')
-            ->groupByRaw('DATE(date)')
-            ->orderBy('date', 'asc')
-            ->get();
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->get()
+            ->map(function ($item) use ($userId) {
+                // Ambil mood dari jurnal terakhir di tanggal itu
+                $lastEntry = Journal::where('user_id', $userId)
+                    ->whereDate('date', $item->date)
+                    ->latest('date')
+                    ->first();
+
+                return [
+                    'date'  => $item->date,
+                    'count' => $item->count,
+                    'mood'  => $lastEntry?->mood ?? '',
+                ];
+            });
 
         return response()->json([
             'status' => 'success',
