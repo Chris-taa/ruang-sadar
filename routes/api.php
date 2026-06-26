@@ -6,7 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\JournalController;
-use App\Http\Controllers\API\QuizController;
+// use App\Http\Controllers\API\QuizController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\PatientController;
 use App\Http\Controllers\API\TherapistController;
@@ -68,8 +68,8 @@ Route::middleware(['api'])->group(function () {
         });
 
         // FITUR QUIZ
-        Route::get('/quizzes', [QuizController::class, 'index']);
-        Route::post('/quizzes/submit', [QuizController::class, 'submit']);
+        // Route::get('/quizzes', [QuizController::class, 'index']);
+        // Route::post('/quizzes/submit', [QuizController::class, 'submit']);
 
         // FITUR CHAT
         Route::get('/chat/{receiver_id}', [ChatController::class, 'getChatHistory']);
